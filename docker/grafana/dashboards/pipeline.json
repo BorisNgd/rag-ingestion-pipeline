@@ -1,0 +1,115 @@
+{
+  "title": "RAG Ingestion Pipeline",
+  "uid": "rag-pipeline-v1",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "10s",
+  "time": { "from": "now-1h", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Documents Ingested (total)",
+      "type": "stat",
+      "gridPos": { "x": 0, "y": 0, "w": 4, "h": 4 },
+      "targets": [{
+        "expr": "sum(rag_ingestion_total)",
+        "legendFormat": "Total"
+      }]
+    },
+    {
+      "id": 2,
+      "title": "Ingestion Rate (docs/min)",
+      "type": "stat",
+      "gridPos": { "x": 4, "y": 0, "w": 4, "h": 4 },
+      "targets": [{
+        "expr": "sum(rate(rag_ingestion_total[1m])) * 60",
+        "legendFormat": "docs/min"
+      }]
+    },
+    {
+      "id": 3,
+      "title": "DLQ Total",
+      "type": "stat",
+      "gridPos": { "x": 8, "y": 0, "w": 4, "h": 4 },
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "thresholds" },
+          "thresholds": { "steps": [
+            { "color": "green", "value": 0 },
+            { "color": "yellow", "value": 1 },
+            { "color": "red", "value": 10 }
+          ]}
+        }
+      },
+      "targets": [{
+        "expr": "sum(rag_dlq_total)",
+        "legendFormat": "DLQ"
+      }]
+    },
+    {
+      "id": 4,
+      "title": "Active Worker Tasks",
+      "type": "stat",
+      "gridPos": { "x": 12, "y": 0, "w": 4, "h": 4 },
+      "targets": [{
+        "expr": "sum(worker_active_tasks)",
+        "legendFormat": "Active"
+      }]
+    },
+    {
+      "id": 5,
+      "title": "Pipeline Duration P50/P95/P99",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 4, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.50, rate(worker_pipeline_duration_seconds_bucket[5m]))",
+          "legendFormat": "P50"
+        },
+        {
+          "expr": "histogram_quantile(0.95, rate(worker_pipeline_duration_seconds_bucket[5m]))",
+          "legendFormat": "P95"
+        },
+        {
+          "expr": "histogram_quantile(0.99, rate(worker_pipeline_duration_seconds_bucket[5m]))",
+          "legendFormat": "P99"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Task Success vs Failure Rate",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 4, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "rate(worker_tasks_processed_total{status='success'}[1m]) * 60",
+          "legendFormat": "Success/min"
+        },
+        {
+          "expr": "rate(worker_tasks_processed_total{status='failed'}[1m]) * 60",
+          "legendFormat": "Failed/min"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Search Latency P95",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 12, "w": 12, "h": 6 },
+      "targets": [{
+        "expr": "histogram_quantile(0.95, rate(rag_search_duration_seconds_bucket[5m]))",
+        "legendFormat": "P95 search latency"
+      }]
+    },
+    {
+      "id": 8,
+      "title": "Search Volume by Collection",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 12, "w": 12, "h": 6 },
+      "targets": [{
+        "expr": "rate(rag_search_total[1m]) * 60",
+        "legendFormat": "{{collection}}"
+      }]
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+groups:
+  - name: rag_pipeline_alerts
+    interval: 30s
+    rules:
+
+      # DLQ is growing — documents are failing permanently
+      - alert: DLQGrowing
+        expr: increase(rag_dlq_total[5m]) > 5
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "DLQ is growing rapidly"
+          description: "More than 5 documents sent to DLQ in the last 5 minutes."
+
+      # Pipeline is slow
+      - alert: PipelineSlowP95
+        expr: histogram_quantile(0.95, rate(worker_pipeline_duration_seconds_bucket[5m])) > 300
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Pipeline P95 latency exceeds 5 minutes"
+          description: "95th percentile pipeline duration is {{ $value | humanizeDuration }}."
+
+      # No workers processing
+      - alert: WorkerIdle
+        expr: sum(worker_active_tasks) == 0 and sum(rate(worker_tasks_processed_total[5m])) == 0
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "No worker tasks processed in 10 minutes"
+          description: "Workers may be down or queue is empty."
+
+      # High failure rate
+      - alert: HighFailureRate
+        expr: >
+          rate(worker_tasks_processed_total{status="failed"}[5m])
+          /
+          rate(worker_tasks_processed_total[5m]) > 0.2
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High task failure rate > 20%"
+          description: "Pipeline failure rate is {{ $value | humanizePercentage }}."
+
+      # Search latency degraded
+      - alert: SearchLatencyHigh
+        expr: histogram_quantile(0.95, rate(rag_search_duration_seconds_bucket[5m])) > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Search P95 latency > 5 seconds"
+          description: "Hybrid search is degraded."

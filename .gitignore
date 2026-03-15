@@ -1,0 +1,43 @@
+# Environment
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Virtual envs
+.venv/
+venv/
+env/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Models (large binaries — store on shared volume)
+/models/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Docker
+docker/postgres/data/
+docker/grafana/data/
+
+# Logs
+*.log
+logs/

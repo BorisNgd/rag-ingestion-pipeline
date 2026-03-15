@@ -1,0 +1,28 @@
+# =============================================================================
+# API Service requirements
+# =============================================================================
+
+fastapi>=0.111.0
+uvicorn[standard]>=0.30.0
+python-multipart>=0.0.9
+
+# File parsers
+PyMuPDF>=1.24.0         # PDF
+python-docx>=1.1.0      # DOCX
+pandas>=2.2.0           # Excel/CSV
+openpyxl>=3.1.2         # Excel read
+beautifulsoup4>=4.12.3  # HTML
+lxml>=5.2.0             # HTML parser
+pytesseract>=0.3.13     # OCR
+Pillow>=10.3.0          # Image handling
+
+# Audio
+faster-whisper>=1.0.0
+
+# Processing
+langdetect>=1.0.9
+presidio-analyzer>=2.2.354     # PII detection
+presidio-anonymizer>=2.2.354   # PII redaction
+
+# Reranker (search quality)
+# FlagEmbedding already in base (includes reranker)
