@@ -31,7 +31,9 @@ RUN pip install --no-cache-dir --upgrade pip \
 # ---------------------------------------------------------------------------
 FROM deps AS runtime
 
-RUN useradd -m -u 1000 appuser
+RUN useradd -m -u 1000 appuser \
+    && mkdir -p /models/huggingface \
+    && chown -R appuser:appuser /models
 
 COPY --chown=appuser:appuser . .
 

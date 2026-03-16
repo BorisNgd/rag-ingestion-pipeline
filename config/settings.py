@@ -8,7 +8,7 @@ from enum import Enum
 from functools import lru_cache
 from typing import Literal
 
-from pydantic import AnyHttpUrl, Field, field_validator
+from pydantic import AnyHttpUrl, AliasChoices, Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -51,7 +51,11 @@ class APISettings(BaseSettings):
     workers: int = 4
     cors_origins: list[str] = ["*"]
     api_key_header: str = "X-API-Key"
-    api_key: str = Field(..., description="Master API key for securing endpoints")
+    api_key: str = Field(
+        ...,
+        description="Master API key for securing endpoints",
+        validation_alias=AliasChoices("API_KEY", "API_API_KEY"),
+    )
     rate_limit_per_minute: int = 60
     max_upload_size_mb: int = 500
 

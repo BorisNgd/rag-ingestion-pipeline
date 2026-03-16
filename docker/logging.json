@@ -3,8 +3,8 @@
   "disable_existing_loggers": false,
   "formatters": {
     "json": {
-      "()": "structlog.stdlib.ProcessorFormatter",
-      "processor": "structlog.processors.JSONRenderer"
+      "class": "logging.Formatter",
+      "format": "{\"level\":\"%(levelname)s\",\"logger\":\"%(name)s\",\"message\":\"%(message)s\"}"
     }
   },
   "handlers": {

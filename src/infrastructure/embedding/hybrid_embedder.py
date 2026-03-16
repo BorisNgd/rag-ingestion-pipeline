@@ -182,15 +182,14 @@ class HybridEmbedder:
                 if tok not in vocab:
                     vocab[tok] = len(vocab)
 
-        sparse_vectors: list[dict[int, float]] = []
-        for tokens in tokenized:
-            scores = bm25.get_scores(tokens)
-            sparse = {
-                vocab[tok]: float(scores[vocab[tok]])
-                for tok in set(tokens)
-                if scores[vocab[tok]] > 0
-            }
-            sparse_vectors.append(sparse)
+        # For each token, bm25.get_scores([tok]) returns an array of size n_docs.
+        # We accumulate per-document weights keyed by vocabulary index.
+        sparse_vectors: list[dict[int, float]] = [{} for _ in tokenized]
+        for tok, tok_id in vocab.items():
+            doc_scores = bm25.get_scores([tok])  # shape: (n_docs,)
+            for doc_idx, score in enumerate(doc_scores):
+                if score > 0:
+                    sparse_vectors[doc_idx][tok_id] = float(score)
 
         return sparse_vectors
 

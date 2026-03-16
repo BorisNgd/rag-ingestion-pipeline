@@ -79,10 +79,12 @@ class SemanticChunker(BaseChunker):
 
 
 class SentenceChunker(BaseChunker):
+    _MODEL_MAX_TOKENS = 384  # all-mpnet-base-v2 hard limit
+
     async def chunk(self, text: str, metadata: dict) -> list[str]:
         splitter = SentenceTransformersTokenTextSplitter(
-            chunk_overlap=settings.chunking.fixed_chunk_overlap,
-            tokens_per_chunk=settings.chunking.fixed_chunk_size,
+            chunk_overlap=min(settings.chunking.fixed_chunk_overlap, self._MODEL_MAX_TOKENS // 4),
+            tokens_per_chunk=min(settings.chunking.fixed_chunk_size, self._MODEL_MAX_TOKENS),
         )
         return splitter.split_text(text)
 

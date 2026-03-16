@@ -38,10 +38,11 @@ miniopy-async>=1.20
 qdrant-client>=1.9.0
 
 # HuggingFace
-transformers>=4.41.0
+transformers>=4.44.0,<5.0.0
 torch>=2.3.0
 FlagEmbedding>=1.2.10
 sentence-transformers>=3.0.0
+peft>=0.10.0
 
 # BM25
 rank-bm25>=0.2.2

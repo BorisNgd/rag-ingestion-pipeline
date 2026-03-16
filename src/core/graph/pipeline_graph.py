@@ -233,6 +233,14 @@ def build_pipeline_graph(
 
 async def create_checkpointer(postgres_dsn: str) -> AsyncPostgresSaver:
     """Create and set up the Postgres-backed LangGraph checkpointer."""
-    checkpointer = AsyncPostgresSaver.from_conn_string(postgres_dsn)
+    from psycopg_pool import AsyncConnectionPool
+
+    pool = AsyncConnectionPool(
+        conninfo=postgres_dsn,
+        open=False,
+        kwargs={"autocommit": True, "prepare_threshold": 0},
+    )
+    await pool.open()
+    checkpointer = AsyncPostgresSaver(conn=pool)
     await checkpointer.setup()
     return checkpointer

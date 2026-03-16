@@ -65,7 +65,7 @@ class MinioObjectStorageRepository(ObjectStorageRepository):
     async def download(self, bucket: str, key: str) -> bytes:
         response = await self._client.get_object(bucket, key)
         data = await response.read()
-        await response.close()
+        response.close()
         return data
 
     async def delete(self, bucket: str, key: str) -> None:
